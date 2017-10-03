@@ -79,7 +79,7 @@ public class TimerActivity extends AppCompatActivity {
         if (savedInstanceState != null) { //method
             restoreValues(savedInstanceState, button);
         } else {
-            button.setText("Start");
+            button.setText(BUTTON_START);
         }
 
         long allTime = (TIMER_VALUE - seconds[0])*1000;
