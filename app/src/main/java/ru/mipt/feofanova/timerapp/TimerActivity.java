@@ -69,21 +69,23 @@ public class TimerActivity extends AppCompatActivity {
     static final int TIMER_VALUE = 1001;
     static final int TIMER_INTERVAL = 1000;
 
+    static CountDownTimer timer;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
 
         final Button button = (Button)findViewById(R.id.button);
 
-        if (savedInstanceState != null) { //method
+        if (savedInstanceState != null) {
             restoreValues(savedInstanceState, button);
         } else {
             button.setText(BUTTON_START);
         }
 
         long allTime = (TIMER_VALUE - seconds[0])*1000;
-        final CountDownTimer timer = new CountDownTimer(allTime, TIMER_INTERVAL) {
+        timer = new CountDownTimer(allTime, TIMER_INTERVAL) {
 
             StringBuffer buff = new StringBuffer();
             @Override
@@ -130,6 +132,22 @@ public class TimerActivity extends AppCompatActivity {
                 String textString = savedInstanceState.getString(KEY_TEXT_, "");
                 ((TextView)findViewById(R.id.text)).setText(textString);
             }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        timer.cancel();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        if (((Button)findViewById(R.id.button)).getText() == BUTTON_STOP) {
+            timer.start();
         }
     }
 
