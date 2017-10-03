@@ -14,7 +14,7 @@
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:layout_gravity="center"
-            android:src="@drawable/RickAndMorty"
+            android:src="@drawable/rick_and_morty"
             />
     </LinearLayout>
 </LinearLayout>

@@ -91,6 +91,10 @@ public class TimerActivity extends AppCompatActivity {
             @Override
             public void onTick(long milliSec) {
                 seconds[0]++;
+                if (seconds[0] >= TIMER_VALUE) {
+                    this.onFinish();
+                    this.cancel();
+                }
                 buff.append(writtenNumbers.get(seconds[0], ""));
 
                 if (buff.length() == 0) {
