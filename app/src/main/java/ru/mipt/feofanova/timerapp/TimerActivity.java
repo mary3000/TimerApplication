@@ -62,6 +62,10 @@ public class TimerActivity extends AppCompatActivity {
     private static final String KEY_TEXT_ = "TEXT";
 
     final int[] seconds = {0};
+
+    static final String BUTTON_START = "Start";
+    static final String BUTTON_STOP = "Stop";
+
     static final int TIMER_VALUE = 1001;
     static final int TIMER_INTERVAL = 1000;
 
@@ -73,11 +77,7 @@ public class TimerActivity extends AppCompatActivity {
         final Button button = (Button)findViewById(R.id.button);
 
         if (savedInstanceState != null) { //method
-            seconds[0] = savedInstanceState.getInt(KEY_SECONDS_, -1);
-            String textString = savedInstanceState.getString(KEY_TEXT_, "def");
-            String buttonString = savedInstanceState.getString(KEY_BUTTON_, "def");
-            ((TextView)findViewById(R.id.text)).setText(textString);
-            button.setText(buttonString);
+            restoreValues(savedInstanceState, button);
         } else {
             button.setText("Start");
         }
@@ -90,22 +90,9 @@ public class TimerActivity extends AppCompatActivity {
             public void onTick(long milliSec) {
                 seconds[0]++;
                 buff.append(writtenNumbers.get(seconds[0], ""));
+
                 if (buff.length() == 0) {
-                    int currentNumber = seconds[0];
-                    for (int i = 0; currentNumber > 0; i++) {
-                        int numeral = currentNumber % 10;
-                        currentNumber = currentNumber / 10;
-                        if (numeral == 0) {
-                            continue;
-                        }
-                        if (i == 0 && currentNumber % 10 == 1) {
-                            buff.insert(0, writtenNumbers.get(numeral + 10) + " ");
-                            currentNumber = currentNumber / 10;
-                            i++;
-                        } else {
-                            buff.insert(0, writtenNumbers.get(numeral*(int)pow(10, i)) + " ");
-                        }
-                    }
+                    parseNumber(buff);
                 }
 
                 ((TextView)findViewById(R.id.text)).setText(buff.toString());
@@ -114,7 +101,7 @@ public class TimerActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                button.setText("Start");
+                button.setText(BUTTON_START);
                 buff.delete(0, buff.length());
                 seconds[0] = 0;
             }
@@ -124,11 +111,12 @@ public class TimerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String buttonString = button.getText().toString();
-                if (buttonString.equals("Start")) {
-                    button.setText("Stop");
+
+                if (buttonString.equals(BUTTON_START)) {
+                    button.setText(BUTTON_STOP);
                     timer.start();
-                } else if (buttonString.equals("Stop")) {
-                    button.setText("Start");
+                } else if (buttonString.equals(BUTTON_STOP)) {
+                    button.setText(BUTTON_START);
                     timer.cancel();
                 }
 
@@ -136,7 +124,7 @@ public class TimerActivity extends AppCompatActivity {
         });
 
         if (savedInstanceState != null) {
-            if (button.getText() == "Stop") {
+            if (button.getText() == BUTTON_STOP) {
                 timer.start();
             } else {
                 String textString = savedInstanceState.getString(KEY_TEXT_, "");
@@ -145,9 +133,40 @@ public class TimerActivity extends AppCompatActivity {
         }
     }
 
+    public void parseNumber(StringBuffer buff) {
+        int currentNumber = seconds[0];
+        for (int i = 0; currentNumber > 0; i++) {
+            int numeral = currentNumber % 10;
+            currentNumber = currentNumber / 10;
+
+            if (numeral == 0) {
+                continue;
+            }
+
+            if (i == 0 && currentNumber % 10 == 1) {
+                buff.insert(0, writtenNumbers.get(numeral + 10) + " ");
+                currentNumber = currentNumber / 10;
+                i++;
+            } else {
+                buff.insert(0, writtenNumbers.get(numeral*(int)pow(10, i)) + " ");
+            }
+        }
+    }
+
+    public void restoreValues(Bundle saved, Button button) {
+        seconds[0] = saved.getInt(KEY_SECONDS_, -1);
+
+        String textString = saved.getString(KEY_TEXT_, "def");
+        String buttonString = saved.getString(KEY_BUTTON_, "def");
+
+        ((TextView)findViewById(R.id.text)).setText(textString);
+        button.setText(buttonString);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putInt(KEY_SECONDS_, seconds[0]);
         outState.putString(KEY_BUTTON_, ((Button)(findViewById(R.id.button))).getText().toString());
         outState.putString(KEY_TEXT_, ((TextView)(findViewById(R.id.text))).getText().toString());
