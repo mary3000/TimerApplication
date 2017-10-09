@@ -25,7 +25,7 @@ public class TimerActivity extends AppCompatActivity {
             append(9, "девять");
             append(10, "десять");
 
-            append(11, "одинадцать");
+            append(11, "одиннадцать");
             append(12, "двенадцать");
             append(13, "тринадцать");
             append(14, "четырнадцать");
@@ -61,16 +61,15 @@ public class TimerActivity extends AppCompatActivity {
     private static final String KEY_BUTTON_ = "BUTTON";
     private static final String KEY_TEXT_ = "TEXT";
 
-    int seconds = 0;
+    static final int TIMER_VALUE = 1001;
+    static final int TIMER_INTERVAL = 1000;
 
     enum State {
         START, STOP
     }
     State buttonState = State.START;
 
-    static final int TIMER_VALUE = 1001;
-    static final int TIMER_INTERVAL = 1000;
-
+    int seconds = 0;
     CountDownTimer timer;
 
     @Override
@@ -116,7 +115,7 @@ public class TimerActivity extends AppCompatActivity {
         long allTime = (TIMER_VALUE - seconds)*1000;
         timer = new CountDownTimer(allTime, TIMER_INTERVAL) {
 
-            StringBuilder buff = new StringBuilder();
+            StringBuilder tmpString = new StringBuilder();
             @Override
             public void onTick(long milliSec) {
                 seconds++;
@@ -125,13 +124,13 @@ public class TimerActivity extends AppCompatActivity {
                     this.cancel();
                 }
 
-                buff.append(WRITTEN_NUMBERS.get(seconds, ""));
-                if (buff.length() == 0) {
-                    parseNumber(buff);
+                tmpString.append(WRITTEN_NUMBERS.get(seconds, ""));
+                if (tmpString.length() == 0) {
+                    parseNumber(tmpString);
                 }
 
-                textView.setText(buff.toString());
-                buff.delete(0, buff.length());
+                textView.setText(tmpString.toString());
+                tmpString.delete(0, tmpString.length());
             }
 
             @Override
@@ -139,7 +138,7 @@ public class TimerActivity extends AppCompatActivity {
                 button.setText(buttonStart);
                 buttonState = State.START;
 
-                buff.delete(0, buff.length());
+                tmpString.delete(0, tmpString.length());
                 seconds = 0;
             }
         };
@@ -187,13 +186,13 @@ public class TimerActivity extends AppCompatActivity {
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        final String BUTTON_START = getString(R.string.start);
+        final String buttonStart = getString(R.string.start);
 
         seconds = savedInstanceState.getInt(KEY_SECONDS_);
 
         String textString = savedInstanceState.getString(KEY_TEXT_, "");
         String buttonString = savedInstanceState.getString(KEY_BUTTON_);
-        buttonState = buttonString.equals(BUTTON_START) ? State.START : State.STOP;
+        buttonState = buttonString.equals(buttonStart) ? State.START : State.STOP;
 
         ((TextView)findViewById(R.id.text)).setText(textString);
         ((Button)findViewById(R.id.button)).setText(buttonString);

@@ -9,7 +9,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     static final String KEY_TIMER_VALUE_ = "TIMER";
-    long MILLI_SECONDS = 2000;
+    long milliSeconds = 2000;
 
     static CountDownTimer timer;
 
@@ -20,20 +20,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        timer.cancel();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
-        timer = new CountDownTimer(MILLI_SECONDS, 10) {
+        timer = new CountDownTimer(milliSeconds, 10) {
 
-            public void onTick(long milliSeconds) {
-                MILLI_SECONDS = milliSeconds;
+            public void onTick(long milliSec) {
+                milliSeconds = milliSec;
             }
 
             public void onFinish() {
@@ -45,15 +38,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        timer.cancel();
+    }
+
+    @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        MILLI_SECONDS = savedInstanceState.getLong(KEY_TIMER_VALUE_);
+        milliSeconds = savedInstanceState.getLong(KEY_TIMER_VALUE_);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putLong(KEY_TIMER_VALUE_, MILLI_SECONDS);
+        outState.putLong(KEY_TIMER_VALUE_, milliSeconds);
     }
 
 }
