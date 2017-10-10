@@ -8,54 +8,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import static java.lang.Math.getExponent;
 import static java.lang.Math.pow;
 
 public class TimerActivity extends AppCompatActivity {
 
-    private static final SparseArray<String> WRITTEN_NUMBERS =  new SparseArray<String>() {
-        {
-            append(1, "один");
-            append(2, "два");
-            append(3, "три");
-            append(4, "четыре");
-            append(5, "пять");
-            append(6, "шесть");
-            append(7, "семь");
-            append(8, "восемь");
-            append(9, "девять");
-            append(10, "десять");
+    TextView textView;
+    Button button;
 
-            append(11, "одиннадцать");
-            append(12, "двенадцать");
-            append(13, "тринадцать");
-            append(14, "четырнадцать");
-            append(15, "пятнадцать");
-            append(16, "шестнадцать");
-            append(17, "семнадцать");
-            append(18, "восемнадцать");
-            append(19, "девятнадцать");
-
-            append(20, "двадцать");
-            append(30, "тридцать");
-            append(40, "сорок");
-            append(50, "пятьдесят");
-            append(60, "шестьдесят");
-            append(70, "семьдесят");
-            append(80, "восемьдесят");
-            append(90, "девяносто");
-
-            append(100, "сто");
-            append(200, "двести");
-            append(300, "триста");
-            append(400, "четыреста");
-            append(500, "пятьсот");
-            append(600, "шестьсот");
-            append(700, "семьсот");
-            append(800, "восемьсот");
-            append(900, "девятьсот");
-            append(1000, "тысяча");
-        }
-    };
+    private SparseArray<String> writtenNumbers = new SparseArray<>();
 
     private static final String KEY_SECONDS_ = "SECONDS";
     private static final String KEY_BUTTON_ = "BUTTON";
@@ -80,7 +41,10 @@ public class TimerActivity extends AppCompatActivity {
         final String buttonStart = getString(R.string.start);
         final String buttonStop = getString(R.string.stop);
 
-        final Button button = (Button)findViewById(R.id.button);
+        fillArrayOfNumbers(writtenNumbers);
+
+        button = (Button)findViewById(R.id.button);
+        textView = (TextView)findViewById(R.id.text);
 
         button.setText(buttonStart);
         buttonState = State.START;
@@ -109,9 +73,6 @@ public class TimerActivity extends AppCompatActivity {
 
         final String buttonStart = getString(R.string.start);
 
-        final TextView textView = ((TextView)findViewById(R.id.text));
-        final Button button = (Button)findViewById(R.id.button);
-
         long allTime = (TIMER_VALUE - seconds)*1000;
         timer = new CountDownTimer(allTime, TIMER_INTERVAL) {
 
@@ -124,7 +85,7 @@ public class TimerActivity extends AppCompatActivity {
                     this.cancel();
                 }
 
-                tmpString.append(WRITTEN_NUMBERS.get(seconds, ""));
+                tmpString.append(writtenNumbers.get(seconds, ""));
                 if (tmpString.length() == 0) {
                     parseNumber(tmpString);
                 }
@@ -166,12 +127,23 @@ public class TimerActivity extends AppCompatActivity {
             }
 
             if (i == 0 && currentNumber % 10 == 1) {
-                buff.insert(0, WRITTEN_NUMBERS.get(numeral + 10) + " ");
+                buff.insert(0, writtenNumbers.get(numeral + 10) + " ");
                 currentNumber = currentNumber / 10;
                 i++;
             } else {
-                buff.insert(0, WRITTEN_NUMBERS.get(numeral*(int)pow(10, i)) + " ");
+                buff.insert(0, writtenNumbers.get(numeral*(int)pow(10, i)) + " ");
             }
+        }
+    }
+
+    public void fillArrayOfNumbers(SparseArray<String> writtenNumbers) {
+        String[] numberStrings = getResources().getStringArray(R.array.number_strings);
+        int[] numbers = getResources().getIntArray(R.array.numbers);
+
+        int i = 0;
+        for (String str : numberStrings) {
+            writtenNumbers.append(numbers[i], str);
+            i++;
         }
     }
 
@@ -180,8 +152,8 @@ public class TimerActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putInt(KEY_SECONDS_, seconds);
-        outState.putString(KEY_BUTTON_, ((Button)(findViewById(R.id.button))).getText().toString());
-        outState.putString(KEY_TEXT_, ((TextView)(findViewById(R.id.text))).getText().toString());
+        outState.putString(KEY_BUTTON_, button.getText().toString());
+        outState.putString(KEY_TEXT_, textView.getText().toString());
     }
 
     @Override
@@ -194,7 +166,7 @@ public class TimerActivity extends AppCompatActivity {
         String buttonString = savedInstanceState.getString(KEY_BUTTON_);
         buttonState = buttonString.equals(buttonStart) ? State.START : State.STOP;
 
-        ((TextView)findViewById(R.id.text)).setText(textString);
-        ((Button)findViewById(R.id.button)).setText(buttonString);
+        textView.setText(textString);
+        button.setText(buttonString);
     }
 }
